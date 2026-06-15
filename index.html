@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DriveEase – Vehicle Rental System</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<style>
+  :root {
+    --primary: #1A3C6E;
+    --primary-dark: #0F2447;
+    --primary-light: #2A5298;
+    --accent: #E8A020;
+    --accent-light: #F5C35A;
+    --accent-dark: #C47D0A;
+    --surface: #F7F8FC;
+    --surface2: #EEF1F8;
+    --card: #FFFFFF;
+    --text: #111827;
+    --text2: #4B5563;
+    --text3: #9CA3AF;
+    --border: #E5E7EB;
+    --border2: #D1D5DB;
+    --success: #059669;
+    --success-bg: #ECFDF5;
+    --danger: #DC2626;
+    --danger-bg: #FEF2F2;
+    --warning: #D97706;
+    --warning-bg: #FFFBEB;
+    --info: #0284C7;
+    --info-bg: #F0F9FF;
+    --radius: 10px;
+    --radius-lg: 16px;
+    --radius-xl: 24px;
+    --shadow: 0 2px 12px rgba(26,60,110,0.10);
+    --shadow-lg: 0 8px 40px rgba(26,60,110,0.14);
+    --transition: 0.18s ease;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--surface);
+    color: var(--text);
+    font-size: 15px;
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+
+  /* ===== TOPBAR ===== */
+  .topbar {
+    background: var(--primary-dark);
+    color: #CBD5E1;
+    font-size: 12.5px;
+    padding: 7px 0;
+  }
+  .topbar .container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  .topbar a { color: #CBD5E1; text-decoration: none; }
+  .topbar a:hover { color: var(--accent-light); }
+  .topbar-left, .topbar-right { display: flex; gap: 20px; align-items: center; }
+  .topbar-left span { display: flex; align-items: center; gap: 6px; }
+
+  /* ===== HEADER / NAV ===== */
+  header {
+    background: var(--primary);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    box-shadow: 0 2px 16px rgba(15,36,71,0.25);
+  }
+  .nav-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 0;
+    height: 68px;
+    gap: 24px;
+  }
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+    flex-shrink: 0;
+  }
+  .logo-icon {
+    width: 42px; height: 42px;
+    background: var(--accent);
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px; color: var(--primary-dark);
+  }
+  .logo-text { color: #fff; }
+  .logo-text strong { font-family: 'Space Grotesk', sans-serif; font-size: 22px; font-weight: 700; display: block; line-height: 1.1; }
+  .logo-text span { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--accent-light); opacity: 0.85; }
+
+  nav { display: flex; align-items: center; gap: 4px; }
+  .nav-item { position: relative; }
+  .nav-link {
+    display: flex; align-items: center; gap: 5px;
+    color: #CBD5E1; font-size: 13.5px; font-weight: 500;
+    padding: 8px 14px; border-radius: 7px;
+    cursor: pointer; text-decoration: none;
+    transition: background var(--transition), color var(--transition);
+    white-space: nowrap; border: none; background: none;
+  }
+  .nav-link:hover, .nav-link.active {
+    background: rgba(255,255,255,0.12);
+    color: #fff;
+  }
+
+  .header-actions { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+  .btn-nav {
+    padding: 8px 18px; border-radius: 8px; font-size: 13.5px; font-weight: 500;
+    cursor: pointer; transition: all var(--transition); text-decoration: none;
+    border: none; display: inline-flex; align-items: center; gap: 6px;
+  }
+  .btn-outline-white { background: transparent; border: 1.5px solid rgba(255,255,255,0.35); color: #CBD5E1; }
+  .btn-outline-white:hover { background: rgba(255,255,255,0.1); color: #fff; border-color: rgba(255,255,255,0.6); }
+  .btn-accent { background: var(--accent); color: var(--primary-dark); font-weight: 600; }
+  .btn-accent:hover { background: var(--accent-light); transform: translateY(-1px); }
+
+  .cart-badge-container { position: relative; display: inline-block; }
+  .cart-count {
+    position: absolute; top: -5px; right: -5px;
+    background: var(--danger); color: white;
+    font-size: 10px; font-weight: bold; padding: 2px 6px;
+    border-radius: 50%; display: none;
+  }
+
+  /* ===== CONTAINER ===== */
+  .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+
+  /* ===== HERO ===== */
+  .hero {
+    background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 55%, #1E4D8C 100%);
+    color: #fff;
+    position: relative;
+    overflow: hidden;
+    padding: 72px 0 60px;
+  }
+  .hero-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 56px; align-items: center; position: relative; }
+  .hero h1 { font-family: 'Space Grotesk', sans-serif; font-size: clamp(30px, 5vw, 52px); font-weight: 700; line-height: 1.1; margin-bottom: 20px; }
+  .hero h1 .highlight { color: var(--accent-light); }
+  .hero p { font-size: 17px; color: #94A3B8; max-width: 500px; margin-bottom: 32px; line-height: 1.7; }
+
+  /* ===== VEHICLE CARDS ===== */
+  .vehicles-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 24px; }
+  .vehicle-card {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    transition: all var(--transition);
+  }
+  .vehicle-card:hover { box-shadow: var(--shadow-lg); transform: translateY(-4px); border-color: var(--border2); }
+  
+  .vehicle-img-wrapper {
+    background: #e2e8f0; height: 200px; width: 100%;
+    display: flex; align-items: center; justify-content: center;
+    position: relative; overflow: hidden;
+  }
+  .vehicle-img-placeholder {
+    width: 100%; height: 100%; object-fit: cover;
+    transition: transform 0.3s ease;
+  }
+  .vehicle-card:hover .vehicle-img-placeholder { transform: scale(1.05); }
+
+  .vehicle-body { padding: 18px; }
+  .vehicle-name { font-family: 'Space Grotesk', sans-serif; font-size: 20px; font-weight: 700; margin-bottom: 4px; color: var(--text); }
+  .vehicle-brand { font-size: 13.5px; color: var(--text2); margin-bottom: 12px; font-weight: 500; }
+  
+  .vehicle-specs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 16px; padding: 12px; background: var(--surface); border-radius: var(--radius); }
+  .spec { text-align: center; }
+  .spec i { display: block; font-size: 14px; color: var(--primary); margin-bottom: 2px; }
+  .spec strong { display: block; font-size: 12px; font-weight: 600; color: var(--text); }
+
+  .vehicle-footer { display: flex; justify-content: space-between; align-items: center; padding-top: 14px; border-top: 1px solid var(--border); }
+  .vehicle-price .amount { font-size: 22px; font-weight: 700; color: var(--primary); font-family: 'Space Grotesk', sans-serif; }
+  .vehicle-price .day { font-size: 12px; color: var(--text3); }
+
+  .btn-book { background: var(--primary); color: #fff; border: none; padding: 10px 20px; border-radius: var(--radius); font-size: 13.5px; font-weight: 600; cursor: pointer; transition: all var(--transition); display: inline-flex; align-items: center; gap: 6px; }
+  .btn-book:hover { background: var(--primary-dark); }
+
+  /* ===== MODAL / DRAWER SYSTEM ===== */
+  .modal-overlay {
+    position: fixed; inset: 0; background: rgba(15,36,71,0.6);
+    backdrop-filter: blur(4px); display: none; align-items: center; justify-content: center;
+    z-index: 3000; padding: 20px;
+  }
+  .modal-content {
+    background: #fff; border-radius: var(--radius-lg); width: 100%; max-width: 550px;
+    box-shadow: var(--shadow-lg); overflow: hidden; animation: zoomIn 0.2s ease;
+    position: relative;
+  }
+  @keyframes zoomIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+  
+  .modal-header { background: var(--primary); color: white; padding: 20px; display: flex; justify-content: space-between; align-items: center; }
+  .modal-header h3 { font-family: 'Space Grotesk', sans-serif; font-size: 20px; }
+  .modal-close { background: none; border: none; color: white; font-size: 20px; cursor: pointer; opacity: 0.8; }
+  .modal-close:hover { opacity: 1; }
+  .modal-body { padding: 24px; max-height: 75vh; overflow-y: auto; }
+
+  /* ===== REGISTRATION STEPPER ===== */
+  .step-indicator { display: flex; justify-content: space-between; margin-bottom: 24px; position: relative; }
+  .step-indicator::before { content: ''; position: absolute; top: 15px; left: 0; right: 0; height: 2px; background: var(--border); z-index: 1; }
+  .step-dot { width: 32px; height: 32px; border-radius: 50%; background: #fff; border: 2px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold; position: relative; z-index: 2; color: var(--text3); }
+  .step-dot.active { border-color: var(--primary); background: var(--primary); color: white; }
+  .step-dot.completed { border-color: var(--success); background: var(--success); color: white; }
+  
+  .reg-step { display: none; }
+  .reg-step.active { display: block; }
+
+  .form-group { margin-bottom: 16px; }
+  .form-group label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; color: var(--text); }
+  .form-group input, .form-group select { width: 100%; padding: 11px 14px; border: 1.5px solid var(--border); border-radius: var(--radius); font-size: 14px; outline: none; }
+  .form-group input:focus { border-color: var(--primary); }
+
+  .btn-block { width: 100%; padding: 12px; border: none; border-radius: var(--radius); font-size: 15px; font-weight: 600; cursor: pointer; text-align: center; display: block; margin-top: 10px; }
+  .btn-primary-form { background: var(--primary); color: white; }
+  .btn-primary-form:hover { background: var(--primary-dark); }
+  
+  /* ===== CART ITEMS IN DRAWER ===== */
+  .cart-item { display: flex; align-items: center; gap: 14px; padding: 12px 0; border-bottom: 1px solid var(--border); }
+  .cart-item-img { width: 70px; height: 50px; background: #e2e8f0; border-radius: 6px; object-fit: cover; }
+  .cart-item-details { flex: 1; }
+  .cart-item-title { font-weight: 600; font-size: 14.5px; }
+  .cart-item-price { color: var(--primary); font-weight: 700; font-size: 14px; }
+  .cart-remove { background: none; border: none; color: var(--danger); cursor: pointer; font-size: 14px; }
+
+  /* ===== ALERTS ===== */
+  .custom-alert { display: none; padding: 12px 16px; border-radius: var(--radius); margin-bottom: 16px; font-size: 14px; font-weight: 500; }
+  .custom-alert.success { background: var(--success-bg); color: var(--success); border: 1px solid rgba(5,150,105,0.2); }
+  
+  /* ===== FOOTER ===== */
+  footer { background: var(--primary-dark); color: #94A3B8; padding: 48px 0; text-align: center; margin-top: 60px; }
+  footer p { color: #64748B; font-size: 14px; }
+</style>
+</head>
+<body>
+
+  <div class="topbar">
+    <div class="container">
+      <div class="topbar-left">
+        <span><i class="fas fa-phone"></i> +92 300 1234567</span>
+        <span><i class="fas fa-envelope"></i> support@driveease.com</span>
+      </div>
+      <div class="topbar-right">
+        <a href="#vehicles">View All Rental Cars</a>
+      </div>
+    </div>
+  </div>
+
+  <header>
+    <div class="container">
+      <div class="nav-wrapper">
+        <a href="#" class="logo">
+          <div class="logo-icon"><i class="fas fa-car-side"></i></div>
+          <div class="logo-text">
+            <strong>DriveEase</strong>
+            <span>Premium Car Rental System</span>
+          </div>
+        </a>
+
+        <nav>
+          <a href="#" class="nav-link active">Home</a>
+          <a href="#vehicles" class="nav-link">Our Fleet</a>
+        </nav>
+
+        <div class="header-actions">
+          <button class="btn-nav btn-outline-white" onclick="openCartModal()">
+            <div class="cart-badge-container">
+              <i class="fas fa-shopping-cart"></i>
+              <span class="cart-count" id="cartCount">0</span>
+            </div>
+            <span>My Bookings</span>
+          </button>
+          <button class="btn-nav btn-accent" onclick="openRegisterModal()"><i class="fas fa-user-plus"></i> Register / Sign Up</button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="container">
+      <div class="hero-grid">
+        <div>
+          <h1>Book Your Favorite Car <span class="highlight">Today!</span></h1>
+          <p>At DriveEase, we provide you with the finest and cleanest vehicles at the most affordable rates. Register your account now and start booking.</p>
+          <div class="hero-actions">
+            <a href="#vehicles" class="btn-hero-primary">Browse All Cars <i class="fas fa-arrow-right"></i></a>
+          </div>
+        </div>
+        <div style="text-align: center;">
+          <div class="hero-car-card">
+            <span style="font-size: 120px; display:block;">🚗</span>
+            <h3>Premium Experience Guaranteed</h3>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="container section" id="vehicles">
+    <div style="text-align: center; margin-bottom: 40px;">
+      <h2>Our Entire Rental Fleet</h2>
+      <p style="color: var(--text2);">Select your favorite car and click 'Book Now' to add it to your cart.</p>
+    </div>
+
+    <div class="vehicles-grid" id="carsContainer">
+      </div>
+  </section>
+
+  <div class="modal-overlay" id="registerModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Register a New Account</h3>
+        <button class="modal-close" onclick="closeRegisterModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        
+        <div class="step-indicator">
+          <div class="step-dot active" id="dot1">1</div>
+          <div class="step-dot" id="dot2">2</div>
+          <div class="step-dot" id="dot3">3</div>
+        </div>
+
+        <div id="registerAlert" class="custom-alert success"></div>
+
+        <div class="reg-step active" id="step1">
+          <h4 style="margin-bottom:14px;">Step 1: Enter Your Details</h4>
+          <div class="form-group">
+            <label>Full Name</label>
+            <input type="text" id="regName" placeholder="e.g., Ali Khan">
+          </div>
+          <div class="form-group">
+            <label>Email Address</label>
+            <input type="email" id="regEmail" placeholder="e.g., ali@example.com">
+          </div>
+          <div class="form-group">
+            <label>Password</label>
+            <input type="password" id="regPass" placeholder="Minimum 6 characters">
+          </div>
+          <button class="btn-block btn-primary-form" onclick="goToStep(2)">Next Step <i class="fas fa-arrow-right"></i></button>
+        </div>
+
+        <div class="reg-step" id="step2">
+          <h4 style="margin-bottom:14px;">Step 2: Driving License Details</h4>
+          <div class="form-group">
+            <label>Driving License Number</label>
+            <input type="text" id="regLicense" placeholder="e.g., DL-123456-XYZ">
+          </div>
+          <div class="form-group">
+            <label>City</label>
+            <select id="regCity">
+              <option>Karachi</option>
+              <option>Lahore</option>
+              <option>Islamabad</option>
+              <option>Rawalpindi</option>
+              <option>Faisalabad</option>
+            </select>
+          </div>
+          <button class="btn-block btn-primary-form" onclick="sendMockEmailVerification()">Send Verification Code <i class="fas fa-envelope"></i></button>
+          <button class="btn-block" style="background:#e2e8f0; color:var(--text);" onclick="goToStep(1)">Go Back</button>
+        </div>
+
+        <div class="reg-step" id="step3">
+          <h4 style="margin-bottom:14px; color: var(--success);"><i class="fas fa-paper-plane"></i> Email Sent Successfully!</h4>
+          <p style="font-size:13.5px; margin-bottom:16px; color: var(--text2);">We have sent a confirmation code to your provided email address. Please enter the code below to complete your registration.</p>
+          <div class="form-group">
+            <label>Enter 4-Digit Confirmation Code</label>
+            <input type="text" id="regCode" placeholder="e.g., 1234" style="text-align:center; font-size:20px; letter-spacing:4px;" maxlength="4">
+          </div>
+          <button class="btn-block btn-primary-form" onclick="verifyEmailAndFinish()">Activate Account <i class="fas fa-check-circle"></i></button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="cartModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Your Booked Rental Cars</h3>
+        <button class="modal-close" onclick="closeCartModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div id="cartItemsContainer">
+          </div>
+        
+        <div id="cartTotalSection" style="margin-top:20px; padding-top:16px; border-top:2px dashed var(--border); display:none;">
+          <div style="display:flex; justify-content:space-between; margin-bottom:16px; font-size:16px; font-weight:700;">
+            <span>Total Rent (Per Day):</span>
+            <span id="cartTotalAmount">Rs. 0</span>
+          </div>
+          <button class="btn-block btn-primary-form" onclick="checkoutBookings()">Confirm Booking <i class="fas fa-shopping-bag"></i></button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <div class="container">
+      <p>&copy; 2026 DriveEase Premium Vehicle Rental System. All Rights Reserved. Book your favorite vehicles with ease.</p>
+    </div>
+  </footer>
+
+  <script>
+    // 1. CARS DATA ARRAY WITH PICTURES (Unsplash free automotive images for perfect display)
+    const carsData = [
+      {
+        id: 1,
+        name: "Civic X Premium",
+        brand: "Honda",
+        price: 8500,
+        image: "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?auto=format&fit=crop&q=80&w=600",
+        type: "Sedan",
+        fuel: "Petrol",
+        transmission: "Automatic",
+        seats: 5
+      },
+      {
+        id: 2,
+        name: "Corolla Grandee",
+        brand: "Toyota",
+        price: 7800,
+        image: "https://images.unsplash.com/photo-1621007947382-bb3c3994e3fb?auto=format&fit=crop&q=80&w=600",
+        type: "Sedan",
+        fuel: "Petrol",
+        transmission: "Automatic",
+        seats: 5
+      },
+      {
+        id: 3,
+        name: "Sportage AWD",
+        brand: "Kia",
+        price: 12000,
+        image: "https://images.unsplash.com/photo-1549399542-7e3f8b79c341?auto=format&fit=crop&q=80&w=600",
+        type: "SUV",
+        fuel: "Petrol",
+        transmission: "Automatic",
+        seats: 5
+      },
+      {
+        id: 4,
+        name: "Fortuner Sigma 4",
+        brand: "Toyota",
+        price: 25000,
+        image: "https://images.unsplash.com/photo-1583121274602-3e2820c69888?auto=format&fit=crop&q=80&w=600",
+        type: "SUV",
+        fuel: "Diesel",
+        transmission: "Automatic",
+        seats: 7
+      },
+      {
+        id: 5,
+        name: "Alto VXL",
+        brand: "Suzuki",
+        price: 3500,
+        image: "https://images.unsplash.com/photo-1619767886558-efdc259cde1a?auto=format&fit=crop&q=80&w=600",
+        type: "Hatchback",
+        fuel: "Petrol",
+        transmission: "Automatic",
+        seats: 4
+      },
+      {
+        id: 6,
+        name: "Yaris ATIV X",
+        brand: "Toyota",
+        price: 6500,
+        image: "https://images.unsplash.com/photo-1605559424843-9e4c228bf1c2?auto=format&fit=crop&q=80&w=600",
+        type: "Sedan",
+        fuel: "Petrol",
+        transmission: "Automatic",
+        seats: 5
+      }
+    ];
+
+    // Cart / Bookings State
+    let myCart = [];
+
+    // Render cars to DOM
+    function renderCars() {
+      const container = document.getElementById('carsContainer');
+      container.innerHTML = '';
+      
+      carsData.forEach(car => {
+        container.innerHTML += `
+          <div class="vehicle-card">
+            <div class="vehicle-img-wrapper">
+              <img src="${car.image}" alt="${car.name}" class="vehicle-img-placeholder">
+            </div>
+            <div class="vehicle-body">
+              <div class="vehicle-brand">${car.brand} &bull; ${car.type}</div>
+              <div class="vehicle-name">${car.name}</div>
+              
+              <div class="vehicle-specs">
+                <div class="spec">
+                  <i class="fas fa-cogs"></i>
+                  <strong>${car.transmission}</strong>
+                </div>
+                <div class="spec">
+                  <i class="fas fa-gas-pump"></i>
+                  <strong>${car.fuel}</strong>
+                </div>
+                <div class="spec">
+                  <i class="fas fa-users"></i>
+                  <strong>${car.seats} Seats</strong>
+                </div>
+              </div>
+
+              <div class="vehicle-footer">
+                <div class="vehicle-price">
+                  <span class="amount">Rs. ${car.price.toLocaleString()}</span>
+                  <span class="day">/ day</span>
+                </div>
+                <button class="btn-book" onclick="addToCart(${car.id})">
+                  <i class="fas fa-calendar-check"></i> Book Now
+                </button>
+              </div>
+            </div>
+          </div>
+        `;
+      });
+    }
+
+    // Add To Cart Functionality
+    function addToCart(carId) {
+      const selectedCar = carsData.find(c => c.id === carId);
+      if(selectedCar) {
+        // Avoid duplicate additions
+        if(myCart.some(item => item.id === carId)) {
+          alert(selectedCar.name + " is already in your booking cart!");
+          return;
+        }
+        myCart.push(selectedCar);
+        updateCartUI();
+        alert(selectedCar.name + " has been added to your booking list! Please check 'My Bookings' above.");
+      }
+    }
+
+    // Update Cart Badge and Counter
+    function updateCartUI() {
+      const countEl = document.getElementById('cartCount');
+      if(myCart.length > 0) {
+        countEl.innerText = myCart.length;
+        countEl.style.display = 'block';
+      } else {
+        countEl.style.display = 'none';
+      }
+    }
+
+    // Modal Control Functions
+    function openCartModal() {
+      document.getElementById('cartModal').style.display = 'flex';
+      renderCartItems();
+    }
+    function closeCartModal() {
+      document.getElementById('cartModal').style.display = 'none';
+    }
+    function openRegisterModal() {
+      document.getElementById('registerModal').style.display = 'flex';
+      goToStep(1);
+    }
+    function closeRegisterModal() {
+      document.getElementById('registerModal').style.display = 'none';
+    }
+
+    // Render Items inside Cart Drawer
+    function renderCartItems() {
+      const container = document.getElementById('cartItemsContainer');
+      const totalSection = document.getElementById('cartTotalSection');
+      const totalAmountEl = document.getElementById('cartTotalAmount');
+      
+      if(myCart.length === 0) {
+        container.innerHTML = `<p style="text-align:center; color:var(--text3); padding:20px 0;">No cars selected. Please click 'Book Now' on a vehicle below.</p>`;
+        totalSection.style.display = 'none';
+        return;
+      }
+
+      container.innerHTML = '';
+      let total = 0;
+      
+      myCart.forEach(item => {
+        total += item.price;
+        container.innerHTML += `
+          <div class="cart-item">
+            <img src="${item.image}" class="cart-item-img">
+            <div class="cart-item-details">
+              <div class="cart-item-title">${item.name}</div>
+              <div class="cart-item-price">Rs. ${item.price.toLocaleString()} / day</div>
+            </div>
+            <button class="cart-remove" onclick="removeFromCart(${item.id})"><i class="fas fa-trash-alt"></i></button>
+          </div>
+        `;
+      });
+
+      totalAmountEl.innerText = "Rs. " + total.toLocaleString();
+      totalSection.style.display = 'block';
+    }
+
+    function removeFromCart(carId) {
+      myCart = myCart.filter(item => item.id !== carId);
+      updateCartUI();
+      renderCartItems();
+    }
+
+    function checkoutBookings() {
+      alert("Booking successfully saved! Please register/login to your account first so that a confirmation email can be sent.");
+      myCart = [];
+      updateCartUI();
+      closeCartModal();
+    }
+
+    // Multi Step Registration Form Logic
+    function goToStep(stepNum) {
+      // Inputs validation checking for progression
+      if(stepNum === 2) {
+        const name = document.getElementById('regName').value;
+        const email = document.getElementById('regEmail').value;
+        const pass = document.getElementById('regPass').value;
+        if(!name || !email || !pass) {
+          alert("Please fill in all details first!");
+          return;
+        }
+      }
+
+      document.querySelectorAll('.reg-step').forEach(step => step.classList.remove('active'));
+      document.querySelectorAll('.step-dot').forEach(dot => dot.classList.remove('active'));
+
+      document.getElementById('step' + stepNum).classList.add('active');
+      document.getElementById('dot' + stepNum).classList.add('active');
+      
+      if(stepNum > 1) document.getElementById('dot1').classList.add('completed');
+      if(stepNum > 2) document.getElementById('dot2').classList.add('completed');
+    }
+
+    function sendMockEmailVerification() {
+      const license = document.getElementById('regLicense').value;
+      if(!license) {
+        alert("Please enter your Driving License number!");
+        return;
+      }
+      
+      // Simulate sending code
+      const alertEl = document.getElementById('registerAlert');
+      alertEl.innerText = "Simulated confirmation email sent successfully to your address! Enter code '1234' on Step 3.";
+      alertEl.style.display = 'block';
+      
+      setTimeout(() => {
+        alertEl.style.display = 'none';
+        goToStep(3);
+      }, 1500);
+    }
+
+    function verifyEmailAndFinish() {
+      const code = document.getElementById('regCode').value;
+      if(code === "1234") {
+        alert("Congratulations! Your account has been successfully confirmed and verified. Email verification completed.");
+        closeRegisterModal();
+        // Reset form fields
+        document.getElementById('regName').value = '';
+        document.getElementById('regEmail').value = '';
+        document.getElementById('regPass').value = '';
+        document.getElementById('regLicense').value = '';
+      } else {
+        alert("Incorrect Verification Code! Please enter '1234' to complete the simulation.");
+      }
+    }
+
+    // App Initialization
+    window.onload = function() {
+      renderCars();
+    };
+  </script>
+</body>
+</html>
